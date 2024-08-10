@@ -17,7 +17,7 @@ func HandlerFromMux(si ServerInterface, r chi.Router) http.Handler {
     })
 }
 
-func HandlerFromMuxWithCustomSetup(si ServerInterface, r chi.Router, setupFunc func(router chi.Router, wrapper *ServerInterfaceWrapper)) http.Handler {
+func HandlerFromMuxWithCustomSetup(si ServerInterface, r chi.Router, setupFunc func(router chi.Router, options *ChiServerOptions, wrapper *ServerInterfaceWrapper)) http.Handler {
     return HandlerWithOptionsAndCustomSetup(si, ChiServerOptions {
         BaseRouter: r,
     }, setupFunc)
@@ -55,7 +55,7 @@ r.{{.Method | lower | title }}(options.BaseURL+"{{.Path | swaggerUriToChiUri}}",
 return r
 }
 
-func HandlerWithOptionsAndCustomSetup(si ServerInterface, options ChiServerOptions, setupFunc func(router chi.Router, wrapper *ServerInterfaceWrapper)) http.Handler {
+func HandlerWithOptionsAndCustomSetup(si ServerInterface, options ChiServerOptions, setupFunc func(router chi.Router, options *ChiServerOptions, wrapper *ServerInterfaceWrapper)) http.Handler {
 r := options.BaseRouter
 
 if r == nil {
@@ -72,6 +72,6 @@ HandlerMiddlewares: options.Middlewares,
 ErrorHandlerFunc: options.ErrorHandlerFunc,
 }
 {{end}}
-setupFunc(r, &wrapper)
+setupFunc(r, &options, &wrapper)
 return r
 }
